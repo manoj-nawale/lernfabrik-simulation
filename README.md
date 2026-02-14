@@ -89,8 +89,6 @@ lern-fabrik-simulation/
 
 ### Install Environment
 ```bash
-conda create -n lf_sim python=3.11
-conda activate lf_sim
 pip install -r requirements.txt
 ```
 
