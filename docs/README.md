@@ -59,14 +59,23 @@ Screenshots in `docs/img/` were captured from the dashboard using the latest run
 configs/*.yaml
      |
      v
-[SimPy Simulation Engine]
-(learning_factory + apps.run_sim)
+[Run Runner / CLI]
+(apps.run_sim)
      |
      v
-CSV artifacts in runs/YYYY-MM-DD_HHMMSS/
-(kpi_general, kpi_stations, inventory_ts, cost_kpis, ...)
+[Simulation Core]
+(learning_factory: simulate.py + stations.py + flows.py)
      |
      v
-[Dash Dashboard]
+[Run Artifacts]
+runs/YYYY-MM-DD_HHMMSS/
+  - kpi_general.csv
+  - kpi_stations.csv
+  - inventory_ts.csv
+  - cost_kpis.csv
+  - ...
+     |
+     v
+[Analytics UI]
 (apps.dashboard)
 ```
