@@ -1,9 +1,13 @@
 # apps/run_sim.py
+import argparse
 from pathlib import Path
 from learning_factory.config import load_config
 from learning_factory.simulate import run_simulation
 
-def _save_csv_bundle(res):
+DEFAULT_CONFIG_PATH = "configs/stellmotor_baseline.yaml"
+
+
+def _save_csv_bundle(res, config_path):
     outdir = Path(res.get("outdir", "runs/_latest"))
     outdir.mkdir(parents=True, exist_ok=True)
 
@@ -19,12 +23,28 @@ def _save_csv_bundle(res):
     ]:
         save(res, name)
 
-    # also drop a quick README.txt
-    (outdir / "README.txt").write_text(res.get("log", ""), encoding="utf-8")
+    # also drop a quick README.txt, including selected config for run traceability
+    log_text = res.get("log", "")
+    resolved_config = Path(config_path).resolve().as_posix()
+    readme_text = f"config_path: {resolved_config}\n\n{log_text}"
+    (outdir / "README.txt").write_text(readme_text, encoding="utf-8")
     print(f"\nSaved run outputs to: {outdir.as_posix()}")
 
+
+def _parse_args():
+    parser = argparse.ArgumentParser(description="Run Lernfabrik simulation.")
+    parser.add_argument(
+        "-c",
+        "--config",
+        default=DEFAULT_CONFIG_PATH,
+        help=f"Path to YAML config file (default: {DEFAULT_CONFIG_PATH})",
+    )
+    return parser.parse_args()
+
+
 def main():
-    cfg = load_config("configs/stellmotor_baseline.yaml")
+    args = _parse_args()
+    cfg = load_config(args.config)
     res = run_simulation(cfg)
 
     print("\n--- General KPIs ---")
@@ -64,7 +84,7 @@ def main():
     print(res["log"])
 
     # NEW: persist CSVs
-    _save_csv_bundle(res)
+    _save_csv_bundle(res, args.config)
 
 if __name__ == "__main__":
     main()
